@@ -33,5 +33,5 @@ const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
         .flat();
 
     console.log(points);
-    console.log(`Starting import from ${moment(start).format(DATE_FORMAT)} to ${moment(end).format(DATE_FORMAT)}`);
+    console.log(`Starting import from ${start} to ${end}`);
 })();
