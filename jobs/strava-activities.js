@@ -1,37 +1,52 @@
 import moment from 'moment';
-import strava from 'strava-v3';
+import fetch from 'node-fetch';
+import { BASE_STRAVA_API_URL, refreshAccessToken } from './utils/strava.js';
 
 const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const ATHLETE_ID = 70861920;
+
+const DATA = [
+    {
+        name: 'distance_run_energiency',
+        valueFn: (activity) => activity.distance / 1000,
+    },
+    {
+        name: 'time_run_energiency',
+        valueFn: (activity) => activity.moving_time,
+    },
+    {
+        name: 'speed_run_energiency',
+        valueFn: (activity) => (activity.distance / activity.moving_time) * 3.6,
+    },
+];
 
 (async () => {
-    const start = moment().subtract(1, 'days').format(DATE_FORMAT);
+    const start = moment().subtract(1, 'days');
     const end = moment().format(DATE_FORMAT);
 
-    strava.config({ access_token: process.env.STRAVA_ACCESS_TOKEN });
-    const activities = await strava.athlete.listActivities({
-        id: 70861920,
-        after: moment().subtract(1, 'months').unix(),
-    });
+    console.log(`Starting import from ${start.format(DATE_FORMAT)} to ${end}`);
+
+    const accessToken = (await refreshAccessToken()).access_token;
+
+    const response = await fetch(
+        `${BASE_STRAVA_API_URL}/athletes/${ATHLETE_ID}/activities?${new URLSearchParams({
+            after: start.unix(),
+        }).toString()}`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    const activities = await response.json();
     const points = activities
-        .map((activity) => [
-            {
-                name: 'distance_run',
-                value: activity.distance / 1000,
-                date: activity.start_date_local,
-            },
-            {
-                name: 'time_run',
-                value: activity.moving_time,
-                date: activity.start_date_local,
-            },
-            {
-                name: 'speed_run',
-                value: (activity.distance / activity.moving_time) * 3.6,
-                date: activity.start_date_local,
-            },
-        ])
+        .map((activity) => {
+            const date = moment.utc(activity.start_date_local).format('YYYY-MM-DD HH:00:00');
+            return DATA.map((meter) => ({ name: meter.name, value: meter.valueFn(activity), date }));
+        })
         .flat();
 
     console.log(points);
-    console.log(`Starting import from ${start} to ${end}`);
 })();

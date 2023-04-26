@@ -6,8 +6,11 @@ Ce projet est une application Node.js qui utilise l'API Strava pour récupérer 
 
 Avant de pouvoir utiliser l'application, vous devez configurer votre environnement avec les informations d'authentification nécessaires.
 
-1. Obtenez un jeton d'accès Strava
-2. Définissez une variable d'environnement `STRAVA_ACCESS_TOKEN` contenant votre jeton d'accès Strava.
+Définissez les variables d'environnement suivantes:
+
+-   `STRAVA_CLIENT_ID` contenant votre ID client Strava
+-   `STRAVA_CLIENT_SECRET` contenant votre clé secrète Strava
+-   `STRAVA_REFRESH_TOKEN` contenant votre jeton de raffraîchissement Strava
 
 ## Lancement de l'application
 
