@@ -27,10 +27,10 @@ const DATA = [
 
     console.log(`Starting import from ${start.format(DATE_FORMAT)} to ${end}`);
 
-    const token_object = await refreshAccessToken(bree.config.shared.stravaRefreshToken)
+    const token_object = await refreshAccessToken(bree.config.shared.stravaRefreshToken);
 
-    if(token_object.refresh_token !== bree.config.shared.stravaRefreshToken){
-        bree.config.shared.stravaRefreshToken = token_object.refresh_token
+    if (token_object.refresh_token !== bree.config.shared.stravaRefreshToken) {
+        bree.config.shared.stravaRefreshToken = token_object.refresh_token;
     }
 
     const response = await fetch(

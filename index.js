@@ -10,10 +10,9 @@ export const bree = new Bree({
             interval: 'every 1 min',
         },
     ],
-    shared:{
-        stravaRefreshToken: process.env.STRAVA_REFRESH_TOKEN
-    }
-   
+    shared: {
+        stravaRefreshToken: process.env.STRAVA_REFRESH_TOKEN,
+    },
 });
 
 const graceful = new Graceful({ brees: [bree] });
