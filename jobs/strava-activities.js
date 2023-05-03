@@ -1,6 +1,7 @@
 import moment from 'moment';
 import fetch from 'node-fetch';
 import { BASE_STRAVA_API_URL, refreshAccessToken } from './utils/strava.js';
+import { bree } from '../index.js';
 
 const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const ATHLETE_ID = 70861920;
@@ -26,7 +27,11 @@ const DATA = [
 
     console.log(`Starting import from ${start.format(DATE_FORMAT)} to ${end}`);
 
-    const accessToken = (await refreshAccessToken()).access_token;
+    const token_object = await refreshAccessToken(bree.config.shared.stravaRefreshToken)
+
+    if(token_object.refresh_token !== bree.config.shared.stravaRefreshToken){
+        bree.config.shared.stravaRefreshToken = token_object.refresh_token
+    }
 
     const response = await fetch(
         `${BASE_STRAVA_API_URL}/athletes/${ATHLETE_ID}/activities?${new URLSearchParams({
@@ -35,7 +40,7 @@ const DATA = [
         {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: `Bearer ${token_object.access_token}`,
             },
         },
     );
